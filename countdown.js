@@ -3,7 +3,11 @@ var WINDOW_HEIGHT = 768;
 var RADIUS = 8;
 var MARGIN_TOP = 60;
 var MARGIN_LEFT = 30;
-var endTime = new Date(2019, 0, 10, 23, 0, 0);
+/*存在一个问题是倒计时中小时数最多只能是两位，超过两位就存在bug了*/
+//var endTime = new Date(2019, 0, 10, 23, 0, 0);
+
+var endTime = new Date();
+endTime.setTime(endTime.getTime() + 3600 * 1000);
 
 var curShowTimeSeconds = 0;
 var balls = [];
@@ -12,14 +16,15 @@ var colors = ["#33B5E5", "#0099CC", "#AA66CC", "#9933CC", "#99CC00", "#669900", 
 
 window.onload = function () {
     /*需要html中style="height: 100%"*/
-    WINDOW_WIDTH=document.body.clientWidth;
-    WINDOW_HEIGHT=document.body.clientHeight;
+    WINDOW_WIDTH = document.body.clientWidth;
+    WINDOW_HEIGHT = document.body.clientHeight;
     console.log(WINDOW_WIDTH)
 
-    MARGIN_TOP=Math.round(WINDOW_HEIGHT/5);
-    MARGIN_LEFT=Math.round(WINDOW_WIDTH/10);
-    RADIUS=Math.round(WINDOW_WIDTH*4/5/108)-1;/*108是下面15个间距小球93+15=108计算得来的*/
-    console.log( MARGIN_LEFT)
+    MARGIN_TOP = Math.round(WINDOW_HEIGHT / 5);
+    MARGIN_LEFT = Math.round(WINDOW_WIDTH / 10);
+    RADIUS = Math.round(WINDOW_WIDTH * 4 / 5 / 108) - 1;
+    /*108是下面15个间距小球93+15=108计算得来的*/
+    console.log(MARGIN_LEFT)
 
     var canvas = document.getElementById('canvas');
     var context = canvas.getContext('2d');
@@ -39,12 +44,17 @@ window.onload = function () {
 };
 
 function getCurrentShowTimeSeconds() {
+    /*/!*倒计时效果*!/
     var curTime = new Date();
     var ret = endTime.getTime() - curTime.getTime();
     ret = Math.round(ret / 1000);
     //console.log(ret);
+    return ret > 0 ? ret : 0;*/
 
-    return ret > 0 ? ret : 0
+    /*改成时钟效果*/
+    var curTime = new Date();
+    var ret = curTime.getHours() * 3600 + curTime.getMinutes() * 60 + curTime.getSeconds();
+    return ret;
 }
 
 function update() {
@@ -121,18 +131,18 @@ function updateBalls() {
         }
     }
 
-     /*对balls数组内存进行优化*/
-     var cnt = 0;
-     for (var i = 0; i < balls.length; i++) {
-         if (balls[i].x + RADIUS > 0 && balls[i].x - RADIUS < WINDOW_WIDTH) {
-             balls[cnt++] = balls[i];
-         }
-     }
+    /*对balls数组内存进行优化*/
+    var cnt = 0;
+    for (var i = 0; i < balls.length; i++) {
+        if (balls[i].x + RADIUS > 0 && balls[i].x - RADIUS < WINDOW_WIDTH) {
+            balls[cnt++] = balls[i];
+        }
+    }
 
-     /*为了动画性能，最多保留300个小球*/
-     while (balls.length > cnt) {
-         balls.pop();
-     }
+    /*为了动画性能，最多保留300个小球*/
+    while (balls.length > cnt) {
+        balls.pop();
+    }
 }
 
 function render(ctx) {
